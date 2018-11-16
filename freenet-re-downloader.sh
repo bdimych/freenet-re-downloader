@@ -45,7 +45,7 @@ function read_files_array { # {{{
 	#   CHK@5rgnpjkCjtql8cbpeABKeC37mkw4XQ28I4cbp6XDWGs,-UJMj1KsmcDVvsq-oAgyh6dSDvQVS-~wMky1i5BNox8,AAMC--8
 	# )
 	log files array size is ${#files[*]}
-	if ! (( ${#files[*]}%4 == 0 ))
+	if (( ${#files[*]} == 0 || ${#files[*]}%4 != 0 ))
 	then
 		error files array size must be multiple of 4
 		exit 1
@@ -64,6 +64,8 @@ function init { # {{{
 	set -e
 	cd $frddir
 
+	# TODO: check settings
+
 	x=$(mydate).txt
 	exec 1>&- 2>&-
 	exec 1>$x 2>&1
@@ -71,7 +73,7 @@ function init { # {{{
 
 	[[ -d $downdir ]]
 	mkdir -pv completed logs-archive
-	mv -v frd-log-* logs-archive
+	ls -l frd-log-* && mv -v frd-log-* logs-archive
 	xz -v logs-archive/*.txt
 
 	logfile=frd-log-$x
