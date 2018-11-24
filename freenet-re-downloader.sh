@@ -22,6 +22,7 @@
 
 # TODO: check single instance
 
+# TODO: separate configuration file
 nodeurl=http://127.0.0.1:8888
 downdir=/home/???/freenet/installed/downloads
 frddir=/home/???/freenet/frd
@@ -31,7 +32,6 @@ logmaxsize=100100100
 freenetRunScript=/home/???/freenet/installed/run.sh
 freenetRestartIntervalDays=7
 completedTooLongAgoDays=7
-updir=/home/???/freenet/frd/uploads # where freenet-put script will put new files
 
 function read_files_array { # {{{
 	source /home/???/freenet/frd/my-files.txt
@@ -51,7 +51,7 @@ function read_files_array { # {{{
 		exit 1
 	fi
 	seq 0 $(( ${#files[*]}/4 - 1 )) | while read ii; do echo "/${files[$ii*4]}"; done >all-file-names.txt
-	find "$downdir" "$updir" "$frddir/completed" -type f -not -name '*.freenet-tmp' | grep -v -F -f all-file-names.txt && warning unlisted files found
+	find "$downdir" "$frddir/completed" -type f -not -name '*.freenet-tmp' | grep -v -F -f all-file-names.txt && warning unlisted files found
 } # }}}
 
 function mydate { date +%F-%T; }
@@ -100,6 +100,8 @@ do
 	echo ========================================================================================================================
 	log next loop
 	echo
+
+	# TODO: if no free space left then print warning and continue to the next loop
 
 	log check log size # {{{
 	set -x
@@ -212,7 +214,6 @@ do
 		log download complete
 		echo $(date +'%s (%F %T)') "'$name' $size $md5 $key" >>frd-completed.txt
 		mv -v "$downdir/$name" $frddir/completed
-		rm -v "$updir/$name"
 	# }}}
 	elif [[ $exists != 0 && $inTheList != 0 ]] # {{{
 	then
