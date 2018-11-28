@@ -200,7 +200,7 @@ do
 	exists=$?
 	md5sum "$downdir/$name" | grep $md5
 	md5sumok=$?
-	sed -i -e 's/^[[:blank:]]*//' tmp.txt
+	sed -i -e 's/^[[:blank:]]*//' tmp.txt || continue # no space left is possible
 	grep -F "$key" tmp.txt
 	inTheList=$?
 	if [[ $exists == 0 && $md5sumok != 0 ]]
