@@ -130,6 +130,7 @@ do
 	if ! ps -A -o pid,etimes,args | grep '\bwrapper.*Freenet.pid' >tmp.txt
 	then
 		warning freenet process not found - start
+		# TODO: if freenet/wrapper.conf size == 0 restore it from backup copy (strange issue I saw several times with freenet v1478)
 		$freenetRunScript start
 		continue
 	else
@@ -180,6 +181,7 @@ do
 			echo "$n: $v"
 			[[ $n =~ identifier ]] && postData+="&$n=$(urlencode <<<"$v")"
 			[[ $n =~ filename ]] && rm -v "$downdir/$v"
+			# TODO: log error description
 		done < <(echo "$failed" | perl -ne '/name="((?:identifier|filename)-\d+).+value="(.+)"/ && print "$1 $2\n"')
 		echo "$postData"
 		if ! wget -O tmp.txt --post-data "$postData" $nodeurl/downloads/
