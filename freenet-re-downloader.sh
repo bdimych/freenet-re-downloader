@@ -219,6 +219,7 @@ do
 	# }}}
 	elif [[ $exists != 0 && $inTheList != 0 ]] # {{{
 	then
+		# TODO: do not start if max_simult_downloads exeeded
 		log start download
 		if ! wget -O tmp.txt --post-data "formPassword=$formpass&key=$(urlencode <<<"$key/$name")&return-type=disk&persistence=forever&download=1&path=$downdir" $nodeurl/downloads/
 		then
@@ -255,6 +256,7 @@ do
 
 	next_random_i
 	[[ $i == 0 ]] && read_files_array
+	# TODO: read files array not randomly but when last modified time changed
 
 done # }}}
 
