@@ -235,6 +235,9 @@ do
 			then
 				error remove stuck download failed
 			fi
+		elif grep 'h.*ago$' tmp2.txt
+		then
+			warning last progress was hours ago
 		fi
 	# }}}
 	fi
