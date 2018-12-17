@@ -175,7 +175,7 @@ do
 	if [[ $failed ]]
 	then
 		warning failed downloads found:
-		perl -ne '$x.=$_; END {$x=~s/<.+?>/ /g; $x=~s/\s+/ /g; print "$x\n"}' <<<"$failed"
+		perl -ne '$x.=$_; END {$x=~s/<.+?>/ /g; $x=~s/\s+/ /g; $x=~s/^\s+|\s+$//g; print "$x\n"}' <<<"$failed"
 		postData="formPassword=$formpass&remove_request=1"
 		while read n v
 		do
