@@ -175,13 +175,13 @@ do
 	if [[ $failed ]]
 	then
 		warning failed downloads found:
+		perl -ne '$x.=$_; END {$x=~s/<.+?>/ /g; $x=~s/\s+/ /g; print "$x\n"}' <<<"$failed"
 		postData="formPassword=$formpass&remove_request=1"
 		while read n v
 		do
 			echo "$n: $v"
 			[[ $n =~ identifier ]] && postData+="&$n=$(urlencode <<<"$v")"
 			[[ $n =~ filename ]] && rm -v "$downdir/$v"
-			# TODO: log error description
 		done < <(echo "$failed" | perl -ne '/name="((?:identifier|filename)-\d+).+value="(.+)"/ && print "$1 $2\n"')
 		echo "$postData"
 		if ! wget -O tmp.txt --post-data "$postData" $nodeurl/downloads/
