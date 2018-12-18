@@ -20,6 +20,8 @@
 
 # }}}
 
+# TODO: check required programs and modules
+
 # TODO: check single instance
 
 # TODO: separate configuration file
