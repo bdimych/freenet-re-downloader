@@ -32,6 +32,7 @@ logmaxsize=100100100
 freenetRunScript=/home/???/freenet/installed/run.sh
 freenetRestartIntervalDays=7
 completedTooLongAgoDays=7
+max_simult_downloads=10
 
 function read_files_array { # {{{
 	source /home/???/freenet/frd/my-files.txt
@@ -160,7 +161,7 @@ do
 		formpass=$(perl -n -e 'if (/formPassword.*?value="(.+)"/) {print $1; exit}' tmp.txt)
 		if [[ -z $formpass ]]
 		then
-			error getting form password failed
+			error get form password failed
 			continue
 		elif ! wget -O tmp.txt --post-data "formPassword=$formpass&remove_finished_downloads_request=1" $nodeurl/downloads/
 		then
@@ -219,11 +220,16 @@ do
 	# }}}
 	elif [[ $exists != 0 && $inTheList != 0 ]] # {{{
 	then
-		# TODO: do not start if max_simult_downloads exeeded
-		log start download
-		if ! wget -O tmp.txt --post-data "formPassword=$formpass&key=$(urlencode <<<"$key/$name")&return-type=disk&persistence=forever&download=1&path=$downdir" $nodeurl/downloads/
+		x=$(perl -ne 'if (/<li><a href="#uncompletedDownload">Downloads in progress \((\d+)\)</) {print STDERR $_; print $1; exit}' <tmp.txt)
+		if (( x < max_simult_downloads ))
 		then
-			error start download failed
+			log start download
+			if ! wget -O tmp.txt --post-data "formPassword=$formpass&key=$(urlencode <<<"$key/$name")&return-type=disk&persistence=forever&download=1&path=$downdir" $nodeurl/downloads/
+			then
+				error start download failed
+			fi
+		else
+			warning cant start download because max_simult_downloads exeeded
 		fi
 	# }}}
 	elif [[ $inTheList == 0 ]] # {{{
