@@ -183,7 +183,7 @@ do
 			echo "$n: $v"
 			[[ $n =~ identifier ]] && postData+="&$n=$(urlencode <<<"$v")"
 			[[ $n =~ filename ]] && rm -v "$downdir/$v"
-		done < <(echo "$failed" | perl -ne '/name="((?:identifier|filename)-\d+).+value="(.+)"/ && print "$1 $2\n"')
+		done < <(echo "$failed" | perl -ne 'use HTML::Entities; /name="((?:identifier|filename)-\d+).+value="(.+)"/ && print decode_entities "$1 $2\n"')
 		echo "$postData"
 		if ! wget -O tmp.txt --post-data "$postData" $nodeurl/downloads/
 		then
