@@ -33,6 +33,7 @@ freenetRunScript=/home/???/freenet/installed/run.sh
 freenetRestartIntervalDays=7
 completedTooLongAgoDays=7
 max_simult_downloads=10
+min_free_space=6100200300
 
 function read_files_array { # {{{
 	source /home/???/freenet/frd/my-files.txt
@@ -114,15 +115,19 @@ do
 	set +x
 	echo # }}}
 
-	log check frddir_max_size # {{{
+	log check frddir_max_size and min_free_space # {{{
 	du -bs $frddir >tmp.txt
 	if (( $(awk '{print $1}' tmp.txt) > $frddir_max_size ))
 	then
 		warning frddir_max_size exceeded: $(< tmp.txt)
-		# delete newest completed
-		# TODO: not to delete files older then completedTooLongAgoDays
-		x="completed/$(ls -tr completed | tail -n1)"; ls -l "$x"; rm -v "$x"
-		# delete old logs
+		find completed -type f -mtime -$completedTooLongAgoDays -ls -delete -quit
+		find logs-archive -mtime +365 -ls -delete
+	fi
+	df --block-size=1 --output=avail,file >tmp.txt
+	if (( $(awk 'END {print $1}' tmp.txt) < min_free_space ))
+	then
+		warning min_free_space reached: $(< tmp.txt)
+		find completed -type f -mtime -$completedTooLongAgoDays -ls -delete -quit
 		find logs-archive -mtime +365 -ls -delete
 	fi
 	echo # }}}
