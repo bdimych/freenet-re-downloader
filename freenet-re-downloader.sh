@@ -98,6 +98,7 @@ do
 	echo
 	[[ $notfirst ]] && sleep $sleep
 	notfirst=1
+	# TODO: automatic restart if script file changed
 
 	echo ========================================================================================================================
 	log next loop
@@ -123,7 +124,7 @@ do
 		find completed -type f -mtime -$completedTooLongAgoDays -ls -delete -quit
 		find logs-archive -mtime +365 -ls -delete
 	fi
-	df --block-size=1 --output=avail,file >tmp.txt
+	df --block-size=1 --output=avail,file $frddir >tmp.txt
 	if (( $(awk 'END {print $1}' tmp.txt) < min_free_space ))
 	then
 		warning min_free_space reached: $(< tmp.txt)
