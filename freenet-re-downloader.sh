@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO: ?maybe join with pdb-scripts?
+
 # (triple curly brackets are for code folding in jEdit)
 # description: {{{
 
@@ -22,7 +24,8 @@
 
 # TODO: check required programs and modules
 
-# TODO: check single instance
+exec 33< "$(readlink -e "$0")" || { echo could not open lock descriptor; exit 1; }
+flock --exclusive --nonblock 33 || { echo script is already running; exit 1; }
 
 # TODO: separate configuration file
 nodeurl=http://127.0.0.1:8888
@@ -237,7 +240,7 @@ do
 				error start download failed
 			fi
 		else
-			warning cant start download because max_simult_downloads exeeded
+			log max_simult_downloads exeeded
 		fi
 	# }}}
 	elif [[ $inTheList == 0 ]] # {{{
