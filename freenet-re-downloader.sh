@@ -159,7 +159,7 @@ do
 
 	log remove finished downloads # {{{
 	rm -fv tmp.txt
-	if ! wget -O tmp.txt $nodeurl/downloads/
+	if ! wget -O tmp.txt $nodeurl/downloads/?fproxyAdvancedMode=1
 	then
 		error wget downloads/ failed
 		sleep 1
