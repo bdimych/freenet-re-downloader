@@ -24,7 +24,7 @@
 
 # TODO: check required programs and modules
 
-exec 33< "$(readlink -e "$0")" || { echo $(date) $0: could not open lock descriptor; exit 1; }
+exec 33> /tmp/${0##*/}.lock || { echo $(date) $0: could not open lock descriptor; exit 1; }
 flock --exclusive --nonblock 33 || { echo $(date) $0: script is already running; exit 1; }
 
 # TODO: separate configuration file
@@ -35,7 +35,7 @@ frddir_max_size=50100200300
 sleep=100
 logmaxsize=100100100
 freenetRunScript=/home/???/freenet/installed/run.sh
-freenetRestartIntervalDays=7
+freenetRestartIntervalDays=20
 completedTooLongAgoDays=7
 max_simult_downloads=10
 min_free_space=6100200300
@@ -269,6 +269,7 @@ do
 	then
 		warning file last time completed was too long ago:
 		tail tmp.txt
+		# TODO: if $inTheList then increase download priority,
 	fi # }}}
 
 	next_random_i
