@@ -37,7 +37,7 @@ logmaxsize=100100100
 freenetRunScript=/home/???/freenet/installed/run.sh
 freenetRestartIntervalDays=20
 completedTooLongAgoDays=7
-max_simult_downloads=10
+max_simult_downloads=5
 min_free_space=6100200300
 
 function read_files_array { # {{{
