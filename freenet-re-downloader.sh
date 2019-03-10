@@ -93,6 +93,7 @@ init
 set +x
 
 function next_random_i {
+	# TODO: (( $RANDOM < 32768/2 )) && i=$(shift tooLongAgoList) && return
 	i=$(( $(shuf -i0-$(( ${#files[*]}/4 - 1 )) -n1) * 4 ))
 }
 read_files_array
@@ -265,11 +266,13 @@ do
 	if ! grep $md5 frd-completed.txt >tmp.txt
 	then
 		warning file was never completed yet
+		# TODO: append tooLongAgoList+=($i)
 	elif (( $(date +%s) - $(awk 'END {print $1}' tmp.txt) > $completedTooLongAgoDays*24*60*60 ))
 	then
 		warning file last time completed was too long ago:
 		tail tmp.txt
 		# TODO: if $inTheList then increase download priority,
+		# TODO: append tooLongAgoList+=($i)
 	fi # }}}
 
 	next_random_i
