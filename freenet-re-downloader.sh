@@ -59,6 +59,7 @@ function read_files_array { # {{{
 	fi
 	seq 0 $(( ${#files[*]}/4 - 1 )) | while read ii; do echo "/${files[$ii*4]}"; done >all-file-names.txt
 	find "$downdir" "$frddir/completed" -type f -not -name '*.freenet-tmp' | grep -v -F -f all-file-names.txt && warning unlisted files found
+	tooLongAgoList=()
 } # }}}
 
 function mydate { date +%F-%T; }
@@ -93,7 +94,7 @@ init
 set +x
 
 function next_random_i {
-	# TODO: (( $RANDOM < 32768/2 )) && i=$(shift tooLongAgoList) && return
+	(( ${#tooLongAgoList[*]} > 0 && $RANDOM > 32768/2 )) && i=${tooLongAgoList[0]} && tooLongAgoList=(${tooLongAgoList[*]:1}) && return
 	i=$(( $(shuf -i0-$(( ${#files[*]}/4 - 1 )) -n1) * 4 ))
 }
 read_files_array
@@ -266,13 +267,13 @@ do
 	if ! grep $md5 frd-completed.txt >tmp.txt
 	then
 		warning file was never completed yet
-		# TODO: append tooLongAgoList+=($i)
+		tooLongAgoList+=($i)
 	elif (( $(date +%s) - $(awk 'END {print $1}' tmp.txt) > $completedTooLongAgoDays*24*60*60 ))
 	then
 		warning file last time completed was too long ago:
 		tail tmp.txt
+		tooLongAgoList+=($i)
 		# TODO: if $inTheList then increase download priority,
-		# TODO: append tooLongAgoList+=($i)
 	fi # }}}
 
 	next_random_i
