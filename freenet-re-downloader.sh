@@ -37,11 +37,21 @@ logmaxsize=100100100
 freenetRunScript=/home/???/freenet/installed/run.sh
 freenetRestartIntervalDays=20
 completedTooLongAgoDays=7
-max_simult_downloads=5
+max_simult_downloads=3
 min_free_space=6100200300
 
+files_file=/home/???/freenet/frd/my-files.txt
 function read_files_array { # {{{
-	source /home/???/freenet/frd/my-files.txt
+	if [[ ! -s "$files_file" ]]
+	then
+		error files_file "$files_file" not found
+		exit 1
+	fi
+	local x=$(stat -c%Y "$files_file")
+	[[ $x == $files_file_mtime ]] && return
+	files_file_mtime=$x
+	log read files array
+	source "$files_file"
 	# should be bash array (name1 size1 md5-1 chk1   name2 size2 md5-2 chk2...),
 	# e.g.:
 	# files=(
@@ -97,8 +107,6 @@ function next_random_i {
 	(( ${#tooLongAgoList[*]} > 0 && $RANDOM > 32768/2 )) && i=${tooLongAgoList[0]} && tooLongAgoList=(${tooLongAgoList[*]:1}) && return
 	i=$(( $(shuf -i0-$(( ${#files[*]}/4 - 1 )) -n1) * 4 ))
 }
-read_files_array
-next_random_i
 while [[ 1 ]] # {{{
 do
 
@@ -106,6 +114,9 @@ do
 	[[ $notfirst ]] && sleep $sleep
 	notfirst=1
 	# TODO: automatic restart if script file changed
+
+	read_files_array
+	next_random_i
 
 	echo ========================================================================================================================
 	log next loop
@@ -275,10 +286,6 @@ do
 		tooLongAgoList+=($i)
 		# TODO: if $inTheList then increase download priority,
 	fi # }}}
-
-	next_random_i
-	[[ $i == 0 ]] && read_files_array
-	# TODO: read files array not randomly but when last modified time changed
 
 done # }}}
 
