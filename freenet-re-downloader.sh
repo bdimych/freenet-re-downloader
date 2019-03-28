@@ -248,9 +248,9 @@ do
 	elif [[ $inTheList == 0 ]] # {{{
 	then
 		grep -P 'CHK@|ago$|%$' tmp.txt | grep -F "freenet:$key" -A3 | tee tmp2.txt
-		if grep 'd.*ago$' tmp2.txt
+		if grep 'h.*ago$' tmp2.txt
 		then
-			warning last progress was days ago - restart
+			warning last progress was hours ago - restart
 			if ! wget -O tmp.txt --post-data "formPassword=$formpass&remove_request=1&identifier-0=FProxy:$(urlencode <<<"$name")" $nodeurl/downloads/
 			then
 				error remove stuck download failed
