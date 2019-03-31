@@ -104,6 +104,7 @@ init
 set +x
 
 function next_i {
+	declare -p tooLongAgoList
 	canStartDownload=1
 	if (( ${#tooLongAgoList[*]} > 0 ))
 	then
