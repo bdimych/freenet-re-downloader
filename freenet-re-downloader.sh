@@ -103,8 +103,18 @@ set -x
 init
 set +x
 
-function next_random_i {
-	(( ${#tooLongAgoList[*]} > 0 && $RANDOM > 32768/2 )) && i=${tooLongAgoList[0]} && tooLongAgoList=(${tooLongAgoList[*]:1}) && return
+function next_i {
+	if (( ${#tooLongAgoList[*]} > 0 ))
+	then
+		canStartDownload=
+		if (( $RANDOM > 32768/2 ))
+		then
+			i=${tooLongAgoList[0]}
+			tooLongAgoList=(${tooLongAgoList[*]:1})
+			canStartDownload=1
+			return
+		fi
+	fi
 	i=$(( $(shuf -i0-$(( ${#files[*]}/4 - 1 )) -n1) * 4 ))
 }
 while [[ 1 ]] # {{{
@@ -116,7 +126,7 @@ do
 	# TODO: automatic restart if script file changed
 
 	read_files_array
-	next_random_i
+	next_i
 
 	echo ========================================================================================================================
 	log next loop
@@ -245,15 +255,18 @@ do
 	elif [[ $exists != 0 && $inTheList != 0 ]] # {{{
 	then
 		x=$(perl -ne 'if (/<li><a href="#uncompletedDownload">Downloads in progress \((\d+)\)</) {print STDERR $_; print $1; exit}' <tmp.txt)
-		if (( x < max_simult_downloads ))
+		if (( x >= max_simult_downloads ))
 		then
+			log max_simult_downloads exeeded
+		elif [[ ! $canStartDownload ]]
+		then
+			log do not start download because of tooLongAgoList
+		else
 			log start download
 			if ! wget -O tmp.txt --post-data "formPassword=$formpass&key=$(urlencode <<<"$key/$name")&return-type=disk&persistence=forever&download=1&path=$downdir" $nodeurl/downloads/
 			then
 				error start download failed
 			fi
-		else
-			log max_simult_downloads exeeded
 		fi
 	# }}}
 	elif [[ $inTheList == 0 ]] # {{{
