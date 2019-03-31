@@ -104,9 +104,10 @@ init
 set +x
 
 function next_i {
+	canStartDownload=1
 	if (( ${#tooLongAgoList[*]} > 0 ))
 	then
-		canStartDownload=
+		(( $RANDOM > 32768/2 )) && canStartDownload=
 		if (( $RANDOM > 32768/2 ))
 		then
 			i=${tooLongAgoList[0]}
