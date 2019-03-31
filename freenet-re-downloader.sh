@@ -112,7 +112,6 @@ function next_i {
 		then
 			i=${tooLongAgoList[0]}
 			tooLongAgoList=(${tooLongAgoList[*]:1})
-			canStartDownload=1
 			return
 		fi
 		(( $RANDOM > 32768/2 )) && canStartDownload=
