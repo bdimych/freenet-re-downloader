@@ -299,6 +299,8 @@ do
 		tail tmp.txt
 		tooLongAgoList+=($i)
 		# TODO: if $inTheList then increase download priority,
+	else
+		tooLongAgoList=($(echo ${tooLongAgoList[*]} | sed "s/\b$i\b//g"))
 	fi # }}}
 
 done # }}}
