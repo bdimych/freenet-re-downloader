@@ -104,7 +104,6 @@ init
 set +x
 
 function next_i {
-	declare -p tooLongAgoList
 	canStartDownload=1
 	if (( ${#tooLongAgoList[*]} > 0 ))
 	then
@@ -296,12 +295,13 @@ do
 	elif (( $(date +%s) - $(awk 'END {print $1}' tmp.txt) > $completedTooLongAgoDays*24*60*60 ))
 	then
 		warning file last time completed was too long ago:
-		tail tmp.txt
+		tail -n5 tmp.txt
 		tooLongAgoList+=($i)
 		# TODO: if $inTheList then increase download priority,
 	else
 		tooLongAgoList=($(echo ${tooLongAgoList[*]} | sed "s/\b$i\b//g"))
 	fi # }}}
+	declare -p tooLongAgoList
 
 done # }}}
 
