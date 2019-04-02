@@ -294,7 +294,10 @@ do
 		warning file last time completed was too long ago:
 		tail -n5 tmp.txt
 		tooLongAgoList+=($i)
-		# TODO: if $inTheList then increase download priority,
+		if [[ $inTheList == 0 ]]
+		then
+			wget -O tmp.txt --post-data "formPassword=$formpass&change_priority_top=1&priority_top=3&identifier-0=FProxy:$(urlencode <<<"$name")" $nodeurl/downloads/
+		fi
 	else
 		tooLongAgoList=($(echo ${tooLongAgoList[*]} | sed "s/\b$i\b//g"))
 	fi # }}}
