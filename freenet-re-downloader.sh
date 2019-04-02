@@ -113,7 +113,7 @@ function next_i {
 			tooLongAgoList=(${tooLongAgoList[*]:1})
 			return
 		fi
-		(( $RANDOM > 32768/2 )) && canStartDownload=
+		(( $RANDOM > 32768/4 )) && canStartDownload=
 	fi
 	i=$(( $(shuf -i0-$(( ${#files[*]}/4 - 1 )) -n1) * 4 ))
 }
