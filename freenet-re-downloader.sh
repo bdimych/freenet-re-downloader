@@ -23,9 +23,12 @@
 # }}}
 
 # TODO: check required programs and modules
+# TODO: and freenet version
 
-exec 33> /tmp/${0##*/}.lock || { echo $(date) $0: could not open lock descriptor; exit 1; }
-flock --exclusive --nonblock 33 || { echo $(date) $0: script is already running; exit 1; }
+lockname=/tmp/${0##*/}.lock
+[[ -d $lockname ]] && { echo $(date) $0: script is already running; exit 1; }
+mkdir -v $lockname
+trap "rmdir -v $lockname" EXIT
 
 # TODO: separate configuration file
 nodeurl=http://127.0.0.1:8888
@@ -92,7 +95,7 @@ function init { # {{{
 	[[ -d $downdir ]]
 	mkdir -pv completed logs-archive
 	ls -l frd-log-* && mv -v frd-log-* logs-archive
-	xz -v logs-archive/*.txt
+	ls -l logs-archive/*.txt && xz -v logs-archive/*.txt
 
 	logfile=frd-log-$x
 	mv -v $x $logfile
@@ -254,8 +257,11 @@ do
 	# }}}
 	elif [[ $exists != 0 && $inTheList != 0 ]] # {{{
 	then
-		x=$(perl -ne 'if (/<li><a href="#uncompletedDownload">Downloads in progress \((\d+)\)</) {print STDERR $_; print $1; exit}' <tmp.txt)
-		if (( x >= max_simult_downloads ))
+		x=$(perl -ne 'if (/<li><a href="#uncompletedDownload">.+ \((\d+)\)</) {print STDERR $_; print $1; exit}' <tmp.txt)
+		if [[ ! $x ]]
+		then
+			error wrong parsing uncompletedDownload
+		elif (( x >= max_simult_downloads ))
 		then
 			log max_simult_downloads exeeded
 		elif [[ ! $canStartDownload ]]
@@ -285,14 +291,19 @@ do
 	echo # }}}
 
 	log check when file was last time completed # {{{
+	tla=
 	if ! grep $md5 frd-completed.txt >tmp.txt
 	then
 		warning file was never completed yet
-		tooLongAgoList+=($i)
+		tla=1
 	elif (( $(date +%s) - $(awk 'END {print $1}' tmp.txt) > $completedTooLongAgoDays*24*60*60 ))
 	then
 		warning file last time completed was too long ago:
 		tail -n5 tmp.txt
+		tla=1
+	fi
+	if [[ $tla ]]
+	then
 		tooLongAgoList+=($i)
 		if [[ $inTheList == 0 ]]
 		then
@@ -300,8 +311,9 @@ do
 		fi
 	else
 		tooLongAgoList=($(echo ${tooLongAgoList[*]} | sed "s/\b$i\b//g"))
-	fi # }}}
+	fi
 	declare -p tooLongAgoList
+	# }}}
 
 done # }}}
 
