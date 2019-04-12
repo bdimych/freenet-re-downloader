@@ -26,8 +26,8 @@
 # TODO: and freenet version
 
 lockname=/tmp/${0##*/}.lock
-[[ -d $lockname ]] && { echo $(date) $0: script is already running; exit 1; }
-mkdir -v $lockname
+[[ -e $lockname ]] && { echo $(date) $0: script is already running; exit 1; }
+mkdir -v $lockname || { echo $(date) $0: could not create lock directory; exit 1; }
 trap "rmdir -v $lockname" EXIT
 
 # TODO: separate configuration file
