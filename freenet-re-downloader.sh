@@ -2,12 +2,12 @@
 
 # TODO: ?maybe join with pdb-scripts?
 
-# (triple curly brackets are for code folding in jEdit)
+# (triple curly brackets for code folding in jEdit)
 # description: {{{
 
 # purpose: constantly download selected files and thus extend their existance in freenet,
 
-# detached background command which will continue after logging out ssh session:
+# detached background command which continues after logging out ssh:
 # nohup bash ./pdbs-180820-freenet-re-downloader.sh &
 
 # how to add startup task (https://stackoverflow.com/questions/4880290/how-do-i-create-a-crontab-through-a-script):
@@ -17,7 +17,7 @@
 # sort files by last completed date:
 # cat frd/frd-completed.txt | perl -ne '/\((.+?)\) '\''(.+?)'\'' /; $x{$2}=$1; END {for (keys %x) {print "$x{$_} $_\n"}}' | sort
 
-# show log with errors and warnings:
+# view errors and warnings in the log:
 # command grep -P -i 'check file|err|warn' frd/frd-log-*.txt | less
 
 # }}}
@@ -178,6 +178,7 @@ do
 		then
 			warning freenet is running more than $freenetRestartIntervalDays days - restart
 			$freenetRunScript stop
+			# TODO: empty and reset datastore/ and downloads/
 			continue
 		fi
 	fi
@@ -246,6 +247,7 @@ do
 	if [[ $exists == 0 && $md5sumok != 0 ]]
 	then
 		error md5sum is different
+		# TODO: ?delete wrong file? ... ?or move to special folder?
 	elif [[ $exists == 0 && $md5sumok == 0 && $inTheList == 0 ]]
 	then
 		error download complete but file is still present in the downloads list
