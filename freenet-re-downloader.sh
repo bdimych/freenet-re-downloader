@@ -190,6 +190,7 @@ do
 	then
 		error wget downloads/ failed
 		sleep 1
+		# TODO: phrase is different for other languages
 		tail $logfile | grep 'Freenet is starting up' && { # https://www.google.com/search?q=freenet+not+enough+entropy
 			warning increase entropy
 			find / -ls >/dev/null 2>&1
@@ -279,8 +280,8 @@ do
 	# }}}
 	elif [[ $inTheList == 0 ]] # {{{
 	then
-		grep -P 'CHK@|ago$|%$' tmp.txt | grep -F "freenet:$key" -A3 | tee tmp2.txt
-		if grep 'h.*ago$' tmp2.txt
+		perl -ne 'if (index($_, q('$key')) > 0) {$x=1; print} if ($x) {if (/%$/) {print} elsif (/request-last-activity/) {$_=<>; print; exit}}' tmp.txt | tee tmp2.txt
+		if tail -n1 tmp2.txt | grep h
 		then
 			warning last progress was hours ago - restart
 			if ! wget -O tmp.txt --post-data "formPassword=$formpass&remove_request=1&identifier-0=FProxy:$(urlencode <<<"$name")" $nodeurl/downloads/
