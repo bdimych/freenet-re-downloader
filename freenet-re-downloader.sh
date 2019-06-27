@@ -260,7 +260,10 @@ do
 	# }}}
 	elif [[ $exists != 0 && $inTheList != 0 ]] # {{{
 	then
-		x=$(perl -ne 'if (/<li><a href="#uncompletedDownload">.+ \((\d+)\)</) {print STDERR $_; print $1; exit}' <tmp.txt)
+		x=$(perl -ne '
+			if (/<li><a href="#uncompletedDownload">.+ \((\d+)\)</) {print STDERR $_; print $1; exit}
+			elsif (/<div id="queue-empty"/) {print STDERR $_; print 0; exit}
+		' tmp.txt)
 		if [[ ! $x ]]
 		then
 			error wrong parsing uncompletedDownload
