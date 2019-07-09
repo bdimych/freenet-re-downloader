@@ -189,12 +189,6 @@ do
 	if ! wget -O tmp.txt $nodeurl/downloads/?fproxyAdvancedMode=1
 	then
 		error wget downloads/ failed
-		sleep 1
-		# TODO: phrase is different for other languages
-		tail $logfile | grep 'Freenet is starting up' && { # https://www.google.com/search?q=freenet+not+enough+entropy
-			warning increase entropy
-			find / -ls >/dev/null 2>&1
-		}
 		continue
 	else
 		formpass=$(perl -n -e 'if (/formPassword.*?value="(.+)"/) {print $1; exit}' tmp.txt)
