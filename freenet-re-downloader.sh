@@ -292,7 +292,7 @@ do
 
 	log check when file was last time completed # {{{
 	grep $md5 frd-completed.txt >tmp.txt
-	let timediff=$(date +%s) - $(awk 'END {print $1}' tmp.txt)
+	let timediff=$(date +%s)-$(awk 'END {print $1}' tmp.txt)
 	tla=
 	if ! [[ -s tmp.txt ]]
 	then
@@ -306,13 +306,13 @@ do
 		if (( $timediff > $completedTooLongAgoDays*24*60*60 * 2 )) # reupload: {{{
 		then
 			warning reupload is needed
-			export reup_path="$frddir/completed/$name"
+			reup_path="$frddir/completed/$name"
 			if ! [[ -e "$reup_path" ]]
 			then
 				warning cant start reupload because file is absent
-			elif ! wget -O - $nodeurl/uploads/ | perl -ne 'if (/<form.*uncompleted-upload/../form>/ and index($_, qq(filename_is">$ENV{reup_path}<))>0) {print; exit 1}'
+			elif wget -O - $nodeurl/uploads/ | grep '<form.*uncompleted-upload'
 			then
-				log reupload is already started
+				warning wont start reupload because uncompleted uploads are present
 			else
 				warning start reupload
 				wget -O /dev/null --post-data "formPassword=$formpass&select-file=1&filename=$(urlencode <<<"$reup_path")&key=freenet:CHK@" $nodeurl/insert-browse/
