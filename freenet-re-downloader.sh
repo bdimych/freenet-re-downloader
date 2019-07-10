@@ -310,7 +310,7 @@ do
 			if ! [[ -e "$reup_path" ]]
 			then
 				warning cant start reupload because file is absent
-			elif wget -O - $nodeurl/uploads/ | grep '<form.*uncompleted-upload'
+			elif wget -O - $nodeurl/uploads/ | grep -o '<form.*uncompleted-upload.*'
 			then
 				warning wont start reupload because uncompleted uploads are present
 			else
