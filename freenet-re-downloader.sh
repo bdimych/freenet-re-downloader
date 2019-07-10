@@ -291,16 +291,34 @@ do
 	echo # }}}
 
 	log check when file was last time completed # {{{
+	grep $md5 frd-completed.txt >tmp.txt
+	let timediff=$(date +%s) - $(awk 'END {print $1}' tmp.txt)
 	tla=
-	if ! grep $md5 frd-completed.txt >tmp.txt
+	if ! [[ -s tmp.txt ]]
 	then
 		warning file was never completed yet
 		tla=1
-	elif (( $(date +%s) - $(awk 'END {print $1}' tmp.txt) > $completedTooLongAgoDays*24*60*60 ))
+	elif (( $timediff > $completedTooLongAgoDays*24*60*60 ))
 	then
 		warning file last time completed was too long ago:
 		tail -n5 tmp.txt
 		tla=1
+		if (( $timediff > $completedTooLongAgoDays*24*60*60 * 2 )) # reupload: {{{
+		then
+			warning reupload is needed
+			export reup_path="$frddir/completed/$name"
+			if ! [[ -e "$reup_path" ]]
+			then
+				warning cant start reupload because file is absent
+			elif ! wget -O - $nodeurl/uploads/ | perl -ne 'if (/<form.*uncompleted-upload/../form>/ and index($_, qq(filename_is">$ENV{reup_path}<))>0) {print; exit 1}'
+			then
+				log reupload is already started
+			else
+				warning start reupload
+				wget -O /dev/null --post-data "formPassword=$formpass&select-file=1&filename=$(urlencode <<<"$reup_path")&key=freenet:CHK@" $nodeurl/insert-browse/
+			fi
+		fi
+		# }}}
 	fi
 	if [[ $tla ]]
 	then
@@ -311,6 +329,7 @@ do
 		fi
 	else
 		tooLongAgoList=($(echo ${tooLongAgoList[*]} | sed "s/\b$i\b//g"))
+		# TODO: remove reupload
 	fi
 	declare -p tooLongAgoList
 	# }}}
