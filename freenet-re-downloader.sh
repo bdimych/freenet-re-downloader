@@ -328,7 +328,15 @@ do
 		fi
 	else
 		tooLongAgoList=($(echo ${tooLongAgoList[*]} | sed "s/\b$i\b//g"))
-		# TODO: remove reupload
+		while read s2 s1
+		do
+			if [[ "$s1" == "$name" ]]
+			then
+				log remove reupload "$s1$s2"
+				wget -O /dev/null --post-data "formPassword=$formpass&remove_request=1&identifier-0=$(urlencode <<<"$s1$s2")" $nodeurl/uploads/
+			fi
+			break
+		done < <(wget -O - $nodeurl/uploads/ | perl -ne 'use HTML::Entities; if (/name="identifier-\d+".+value="(.+)(-fred-\d+)"/) {print decode_entities "$2 $1\n"}')
 	fi
 	declare -p tooLongAgoList
 	# }}}
