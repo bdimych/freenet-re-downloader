@@ -216,7 +216,7 @@ do
 			echo "$n: $v"
 			[[ $n =~ identifier ]] && postData+="&$n=$(urlencode <<<"$v")"
 			[[ $n =~ filename ]] && rm -v "$downdir/$v"
-		done < <(echo "$failed" | perl -ne 'use HTML::Entities; /name="((?:identifier|filename)-\d+).+value="(.+)"/ && print decode_entities "$1 $2\n"')
+		done < <(echo "$failed" | perl -MHTML::Entities -ne '/name="((?:identifier|filename)-\d+).+value="(.+)"/ && print decode_entities "$1 $2\n"')
 		echo "$postData"
 		if ! wget -O tmp.txt --post-data "$postData" $nodeurl/downloads/
 		then
@@ -336,7 +336,7 @@ do
 				wget -O /dev/null --post-data "formPassword=$formpass&remove_request=1&identifier-0=$(urlencode <<<"$s1$s2")" $nodeurl/uploads/
 			fi
 			break
-		done < <(wget -O - $nodeurl/uploads/ | perl -ne 'use HTML::Entities; if (/name="identifier-\d+".+value="(.+)(-fred-\d+)"/) {print decode_entities "$2 $1\n"}')
+		done < <(wget -O - $nodeurl/uploads/ | perl -MHTML::Entities -ne 'if (/name="identifier-\d+".+value="(.+)(-fred-\d+)"/) {print decode_entities "$2 $1\n"}')
 	fi
 	declare -p tooLongAgoList
 	# }}}
