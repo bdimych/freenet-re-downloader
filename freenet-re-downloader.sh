@@ -305,14 +305,13 @@ do
 		tla=1
 		if (( $timediff > $completedTooLongAgoDays*24*60*60 * 2 )) # reupload: {{{
 		then
-			warning reupload is needed
 			reup_path="$frddir/completed/$name"
 			if ! [[ -e "$reup_path" ]]
 			then
-				warning cant start reupload because file is absent
+				warning reupload is needed but file is absent
 			elif wget -O - $nodeurl/uploads/ | grep -o '<form.*uncompleted-upload.*'
 			then
-				warning wont start reupload because uncompleted uploads are present
+				warning reupload is needed but other uploads are running
 			else
 				warning start reupload
 				wget -O /dev/null --post-data "formPassword=$formpass&select-file=1&filename=$(urlencode <<<"$reup_path")&key=freenet:CHK@" $nodeurl/insert-browse/
