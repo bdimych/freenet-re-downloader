@@ -126,7 +126,7 @@ do
 	echo
 	[[ $notfirst ]] && sleep $sleep
 	notfirst=1
-	# TODO: automatic restart if script file changed
+	# ?TODO: automatic restart if script file changed?
 
 	read_files_array
 	next_i
@@ -289,6 +289,7 @@ do
 	# }}}
 	fi
 	echo # }}}
+	sleep 5
 
 	log check when file was last time completed # {{{
 	grep $md5 frd-completed.txt >tmp.txt
@@ -324,6 +325,7 @@ do
 		tooLongAgoList+=($i)
 		if [[ $inTheList == 0 ]]
 		then
+			log raise download priority
 			wget -O tmp.txt --post-data "formPassword=$formpass&change_priority_top=1&priority_top=3&identifier-0=FProxy:$(urlencode <<<"$name")" $nodeurl/downloads/
 		fi
 	else
