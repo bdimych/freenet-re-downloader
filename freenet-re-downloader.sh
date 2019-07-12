@@ -334,8 +334,8 @@ do
 			then
 				log remove reupload "$s1$s2"
 				wget -O /dev/null --post-data "formPassword=$formpass&remove_request=1&identifier-0=$(urlencode <<<"$s1$s2")" $nodeurl/uploads/
+				break
 			fi
-			break
 		done < <(wget -O - $nodeurl/uploads/ | perl -MHTML::Entities -ne 'if (/name="identifier-\d+".+value="(.+)(-fred-\d+)"/) {print decode_entities "$2 $1\n"}')
 	fi
 	declare -p tooLongAgoList
