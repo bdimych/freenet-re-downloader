@@ -47,7 +47,7 @@ files_file=/home/???/freenet/frd/my-files.txt
 function read_files_array { # {{{
 	if [[ ! -s "$files_file" ]]
 	then
-		error files_file "$files_file" not found
+		error files_file "$files_file" not found or has zero size
 		exit 1
 	fi
 	local x=$(stat -c%Y "$files_file")
@@ -71,7 +71,7 @@ function read_files_array { # {{{
 		exit 1
 	fi
 	seq 0 $(( ${#files[*]}/4 - 1 )) | while read ii; do echo "/${files[$ii*4]}"; done >all-file-names.txt
-	find "$downdir" "$frddir/completed" -type f -not -name '*.freenet-tmp' | grep -v -F -f all-file-names.txt && warning unlisted files found
+	find "$downdir" completed -type f -not -name '*.freenet-tmp' | grep -v -F -f all-file-names.txt && warning unlisted files found
 	tooLongAgoList=()
 } # }}}
 
@@ -148,19 +148,26 @@ do
 	echo # }}}
 
 	log check frddir_max_size and min_free_space # {{{
-	du -bs $frddir >tmp.txt
+	frddir_little_space=
+	du -bs . >tmp.txt
 	if (( $(awk '{print $1}' tmp.txt) > $frddir_max_size ))
 	then
-		warning frddir_max_size exceeded: $(< tmp.txt)
-		find completed -type f -mtime -$completedTooLongAgoDays -ls -delete -quit
-		find logs-archive -mtime +365 -ls -delete
+		warning frddir_max_size exceeded: $PWD: $(< tmp.txt)
+		frddir_little_space=1
 	fi
-	df --block-size=1 --output=avail,file $frddir >tmp.txt
-	if (( $(awk 'END {print $1}' tmp.txt) < min_free_space ))
+	df --block-size=1 --output=avail,file . >tmp.txt
+	if (( $(awk 'END {print $1}' tmp.txt) < $min_free_space ))
 	then
-		warning min_free_space reached: $(< tmp.txt)
-		find completed -type f -mtime -$completedTooLongAgoDays -ls -delete -quit
-		find logs-archive -mtime +365 -ls -delete
+		warning min_free_space reached: $PWD: $(< tmp.txt)
+		frddir_little_space=1
+	fi
+	if [[ $frddir_little_space ]]
+	then
+		ls -tl logs-archive | tail -n1
+		ls -t logs-archive | tail -n1 | xargs -L1 -d'\n' rm -v
+
+		ls -trl completed | tail -n1
+		ls -tr completed | tail -n1 | xargs -L1 -d'\n' rm -v
 	fi
 	echo # }}}
 
@@ -250,7 +257,12 @@ do
 	then
 		log download complete
 		echo $(date +'%s (%F %T)') "'$name' $size $md5 $key" >>frd-completed.txt
-		mv -v "$downdir/$name" $frddir/completed
+		if [[ $frddir_little_space ]]
+		then
+			rm -v "$downdir/$name"
+		else
+			mv -v "$downdir/$name" completed
+		fi
 	# }}}
 	elif [[ $exists != 0 && $inTheList != 0 ]] # {{{
 	then
