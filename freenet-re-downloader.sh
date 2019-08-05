@@ -37,8 +37,8 @@ frddir=/home/???/freenet/frd
 frddir_max_size=50100200300
 sleep=100
 logmaxsize=100100100
-freenetRunScript=/home/???/freenet/installed/run.sh
 freenetRestartIntervalDays=20
+freenetRunScript=/home/???/freenet/installed/run.sh
 completedTooLongAgoDays=7
 max_simult_downloads=3
 min_free_space=6100200300
@@ -80,7 +80,7 @@ function log { echo $(mydate): LOG: "$@"; }
 function error { echo $(mydate): ERROR: "$@"; }
 function warning { echo $(mydate): WARNING: "$@"; }
 function sleep { log sleep $1; echo; command sleep $1; }
-function urlencode { python -c 'import urllib; print urllib.quote(raw_input())'; }
+function urlencode { python -c 'import urllib; print urllib.quote(raw_input())'; } # TODO in python3 function names are different
 function init { # {{{
 	set -e
 	cd $frddir
