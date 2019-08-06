@@ -1,7 +1,7 @@
 ### freenet-re-downloader
 
 Freenet https://freenetproject.org is well known opensource distributed storage system,
-it works like big cache - nodes keep the file while someone downloads it,
+it works like big cache - nodes keep the file (more precisely chunks of file) while users continue downloading this file,
 so, if you want to extend file's lifetime you need to download it regularly,
 and this script can automate this task.
 
@@ -16,12 +16,14 @@ Script doesn't require installation, but some packages are required.
 
 First of all freenet node is required - see installation instructions https://freenetproject.org/pages/download.html
 
-and these packages are used in the script (Ubuntu 16.04):
+and those packages are used in the script (Ubuntu 16.04):
+```
 sudo apt install python2.7 wget libhtml-parser-perl
+```
 
 ### Settings
 
-settings are placed in the beginning of the script:
+settings are placed right in the script:
 
 **nodeurl=http://127.0.0.1:8888**
 url of freenet web interface,
@@ -91,7 +93,7 @@ and add this line:
 
 ### Control
 
-the script redirects all output to the log file $frddir/frd-log-<starting-date-and-time>.txt
+the script redirects all output to the log file $frddir/frd-log-&lt;starting-date-and-time&gt;.txt
 the log is always detailed, there are no levels of verbosity,
 so, you can use standard `grep` and `less`,
 e.g. to see general overview of how it is going:
@@ -107,7 +109,13 @@ perl -ne '/\((.+?)\) '\''(.+?)'\'' /; $x{$2}=$1; END {for (keys %x) {print "$x{$
 
 ### TODO
 
-using API https://github.com/freenet/wiki/wiki/FCPv2 might be better than simulating browser.
+find out how to calculate CHK and create helper script which will be able to add files to the list automatically without need of manual uploads and waiting when freenet will show CHK in browser,
 
-the script works only with CHK links but there are also SSK and USK links,
+make more intelligent seletion of which file should be checked on next iteration,
+now the file is selected randomly and there is only one hard threshold $completedTooLongAgoDays,
+but it looks logically to invent some "weight" of file depending on last download time + some rating of importance,
+
+using API https://github.com/freenet/wiki/wiki/FCPv2 might be better than simulating browser requests,
+
+now the script works only with CHK links but there are also SSK and USK links,
 
