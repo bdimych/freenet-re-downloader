@@ -25,51 +25,51 @@ sudo apt install python2.7 wget libhtml-parser-perl
 
 settings are placed right in the script:
 
-**nodeurl=http://127.0.0.1:8888**
+**nodeurl=http://127.0.0.1:8888**\
 url of freenet web interface,
 
-**downdir=/home/???/freenet/installed/downloads**
+**downdir=/home/???/freenet/installed/downloads**\
 where freenet saves downloaded files,
 
-**frddir=/home/???/freenet/frd**
+**frddir=/home/???/freenet/frd**\
 the script can be run from any directory, but on start it cd-s to this directory,
 
-**frddir_max_size=50100200300**
+**frddir_max_size=50100200300**\
 the script copies downloaded files from $downdir to $frddir/completed/ so $frddir can become very big,\
 and you can set this limit - if limit is reached then the script will delete some files and free up space,\
 (if set to 0 then downloaded files will be just deleted without copying,)
 
-**sleep=100**
+**sleep=100**\
 script's main task is to check and re-download selected files,\
 it sleeps in the background and every $sleep seconds it will perform next check,
 
-**logmaxsize=100100100**
+**logmaxsize=100100100**\
 on start the script cd-s to $frddir and redirects all output to the log file,\
 and since it is running 24/7 the log file constantly grows,\
 and this is it's limit - after this limit the script will create new log and put (and compress) old log to the $frddir/logs-archive/ directory,
 
-**freenetRestartIntervalDays=20**
+**freenetRestartIntervalDays=20**\
 freenet is quite stable and can run during months,\
 but sometimes it still can stuck, so the script can restart freenet process every this number of days,
 
-**freenetRunScript=/home/???/freenet/installed/run.sh**
+**freenetRunScript=/home/???/freenet/installed/run.sh**\
 path to freenet starting script,
 
-**completedTooLongAgoDays=7**
+**completedTooLongAgoDays=7**\
 the script takes list of files and on every iteration (see above "sleep") it selects file randomly,\
 so, there is no guarantee that all files will be downloaded absolutely regularly,\
 if some file was last downloaded more than this number of days ago, then the script will start to check it more frequently,\
 (and if twice number of days then it will try to re-upload file (if it still exists in the $frddir/completed/,)
 
-**max_simult_downloads=3**
+**max_simult_downloads=3**\
 if download queue is too big then downloads become slower and freenet can behave unreliably,\
 the script will not start new downloads above this number,
 
-**min_free_space=6100200300**
+**min_free_space=6100200300**\
 the same purpose as "frddir_max_size" - to free up space,\
 but here is vice versa - not maximal size but minimal free space,
 
-**files_file=/home/???/freenet/frd/my-files.txt**
+**files_file=/home/???/freenet/frd/my-files.txt**\
 path to file with list of files,\
 the list is just bash array where every 4 elements represent one file: (name1 size1 md51 chk1 name2 size2...),\
 example:
