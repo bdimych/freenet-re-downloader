@@ -1,8 +1,8 @@
 ### freenet-re-downloader
 
-Freenet https://freenetproject.org is well known opensource distributed storage system,
-it works like big cache - nodes keep the file (more precisely chunks of file) while users continue downloading this file,
-so, if you want to extend file's lifetime you need to download it regularly,
+Freenet https://freenetproject.org is well known opensource distributed storage system,\
+it works like big cache - nodes keep the file (more precisely chunks of file) while users continue downloading this file,\
+so, if you want to extend file's lifetime you need to download it regularly,\
 and this script can automate this task.
 
 It is intended to be run on Linux server together with freenet node,
