@@ -25,7 +25,7 @@ sudo apt install python2.7 wget libhtml-parser-perl
 
 settings are placed right in the script:
 
-**nodeurl=http://127.0.0.1:8888**\
+`**nodeurl=http://127.0.0.1:8888**`\
 url of freenet web interface,
 
 **downdir=/home/???/freenet/installed/downloads**\
@@ -84,8 +84,8 @@ files+=(
 
 the script can be run from any directory,\
 it can be run normally in foreground but you will see nothing because it redirects all output to the log file,\
-to run it in the background use `nohup bash ./pdbs-180820-freenet-re-downloader.sh &`,\
-or you can add crontab job with @reboot keyword - see `man 1 crontab` and `man 5 crontab`,\
+to run it in the background use `nohup bash ./pdbs-180820-freenet-re-downloader.sh &`\
+or you can add crontab job with @reboot keyword - see `man 1 crontab` and `man 5 crontab`\
 e.g.\
 `crontab -e`\
 and add this line:\
@@ -95,7 +95,7 @@ and add this line:\
 
 the script redirects all output to the log file $frddir/frd-log-&lt;starting-date-and-time&gt;.txt\
 the log is always detailed, there are no levels of verbosity,\
-so, you can use standard `grep` and `less`,\
+so, you can use standard `grep` and `less`\
 e.g. to see general overview of how it is going:
 ```
 grep -i -P 'check file|err|warn' /home/???/freenet/frd/frd-log-*.txt | less
@@ -109,13 +109,13 @@ perl -ne '/\((.+?)\) '\''(.+?)'\'' /; $x{$2}=$1; END {for (keys %x) {print "$x{$
 
 ### TODO
 
-find out how to calculate CHK and create helper script which will be able to add files to the list automatically without need of manual uploads and waiting when freenet will show CHK in browser,
+- find out how to calculate CHK and create helper script which will be able to add files to the list automatically without need of manual uploads and waiting when freenet will show CHK in browser,
 
-make more intelligent seletion of which file should be checked on next iteration,\
+- make more intelligent seletion of which file should be checked on next iteration,\
 now the file is selected randomly and there is only one hard threshold $completedTooLongAgoDays,\
 but it looks logically to invent some "weight" of file depending on last download time + some rating of importance,
 
-using API https://github.com/freenet/wiki/wiki/FCPv2 might be better than simulating browser requests,
+- using API https://github.com/freenet/wiki/wiki/FCPv2 might be better than simulating browser requests,
 
-now the script works only with CHK links but there are also SSK and USK links,
+- now the script works only with CHK links but there are also SSK and USK links,
 
