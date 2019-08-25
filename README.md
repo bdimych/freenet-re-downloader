@@ -122,5 +122,5 @@ but it looks logically to invent some "weight" of file depending on last downloa
 
 - make protection:\
 - do not start download directly to disk, but start "internal" download and save to disk only on complete,\
-- or better make sure that freenet and script are both located on encrypted volume, and if not then stop with error,
+- or better make sure that freenet and script and $files_file are all located on encrypted volume, and if not then stop with error,
 
